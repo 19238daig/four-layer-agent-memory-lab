@@ -1,0 +1,8 @@
+/* Use the visible viewport during pinch zoom; keep native zoom enabled. */
+.app-shell{width:var(--app-viewport-width,100%);max-width:100%;min-height:var(--app-viewport-height,100vh)}
+.meal-mode #main-content{width:100%;max-width:none;margin-inline:0}
+.sidebar{height:var(--app-viewport-height,100vh)}
+.meal-lab{container-type:inline-size}
+@container(max-width:1100px){.meal-session-controls{grid-template-columns:1fr 1fr}.meal-session-heading{flex-direction:column;align-items:flex-start}.meal-compare-grid.three{grid-template-columns:1fr 1fr}.meal-compare-intro{align-items:flex-start;flex-wrap:wrap}.meal-compare-options{gap:12px}.meal-section-title{flex-wrap:wrap}}
+@container(max-width:700px){.meal-session-controls,.meal-work-grid,.meal-compare-grid,.meal-compare-grid.three{grid-template-columns:minmax(0,1fr)}.meal-session-controls>.button{width:100%;justify-content:center}.meal-save-memory{align-items:stretch;flex-direction:column}.meal-save-memory label{max-width:none}.meal-save-memory small{max-width:none}.meal-memory-grid{grid-template-columns:1fr}.meal-result-cards{grid-template-columns:1fr}.meal-identity{flex-wrap:wrap}.meal-execute{flex-direction:column;align-items:stretch}.meal-execute>.button{align-self:stretch;justify-content:center}.meal-catalog,.meal-history{grid-template-columns:minmax(0,1fr)}.meal-session-panel{padding:15px}.meal-loaded-memory{min-width:0}.meal-compare-options label{max-width:100%}}
+@media(max-width:600px){.sidebar{height:auto}}

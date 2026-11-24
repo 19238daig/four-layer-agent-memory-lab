@@ -1,0 +1,11 @@
+import {chromium} from 'playwright-core';
+import fs from 'node:fs/promises';
+const browser=await chromium.launch({executablePath:'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe',headless:true});
+const page=await browser.newPage({viewport:{width:2526,height:1400},reducedMotion:'reduce'});
+await page.addInitScript(()=>localStorage.setItem('meal-space:demo','meal-mwk58p94'));
+await page.goto('http://127.0.0.1:8010/?view=meal');await page.getByRole('button',{name:'高级详情',exact:true}).click();await page.getByLabel('选择选餐会话').waitFor();
+const cdp=await page.context().newCDPSession(page);await cdp.send('Emulation.setPageScaleFactor',{pageScaleFactor:1.5});
+console.log(JSON.stringify(await page.evaluate(()=>({layout:innerWidth,visible:visualViewport.width,scale:visualViewport.scale,right:document.querySelector('.meal-session-controls .button').getBoundingClientRect().right,left:document.querySelector('.meal-lab').getBoundingClientRect().left}))));
+await fs.mkdir(new URL('../artifacts/meal-zoom/',import.meta.url),{recursive:true});
+await page.screenshot({path:new URL('../artifacts/meal-zoom/before.png',import.meta.url).pathname.replace(/^\/(\w:)/,'$1')});
+await browser.close();

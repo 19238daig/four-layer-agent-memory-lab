@@ -1,0 +1,20 @@
+-- 专用模拟库；只在新建的 meal_catalog.sqlite3 中执行。
+PRAGMA foreign_keys=ON;
+CREATE TABLE shop_mst(shop_cd TEXT PRIMARY KEY,nm TEXT NOT NULL,active_f INTEGER NOT NULL);
+CREATE TABLE menu_item(item_cd TEXT PRIMARY KEY,shop_cd TEXT REFERENCES shop_mst,nm TEXT NOT NULL,kind_cd TEXT,hot_lv INTEGER,active_f INTEGER NOT NULL);
+CREATE TABLE item_alias(alias_id TEXT PRIMARY KEY,item_cd TEXT REFERENCES menu_item,alias_txt TEXT NOT NULL,source_txt TEXT);
+CREATE TABLE material_dict(mat_cd TEXT PRIMARY KEY,nm TEXT NOT NULL,edible_ratio REAL NOT NULL CHECK(edible_ratio>0 AND edible_ratio<=1));
+CREATE TABLE nutrient_ver(nut_id TEXT PRIMARY KEY,mat_cd TEXT REFERENCES material_dict,basis_cd TEXT NOT NULL,p_100 REAL,f_100 REAL,c_100 REAL,valid_from TEXT NOT NULL,valid_to TEXT,source_txt TEXT);
+CREATE TABLE cook_rule(rule_cd TEXT PRIMARY KEY,nm TEXT,yield_factor REAL NOT NULL CHECK(yield_factor>0),oil_lo REAL NOT NULL,oil_hi REAL NOT NULL,CHECK(oil_lo>=0 AND oil_hi<=1 AND oil_lo<=oil_hi));
+CREATE TABLE recipe_ver(recipe_id TEXT PRIMARY KEY,item_cd TEXT REFERENCES menu_item,ver_no INTEGER,servings REAL NOT NULL CHECK(servings>0),oil_g REAL,rule_cd TEXT REFERENCES cook_rule,valid_from TEXT NOT NULL,valid_to TEXT);
+CREATE TABLE unit_map(map_id TEXT PRIMARY KEY,mat_cd TEXT NOT NULL,uom TEXT NOT NULL,g_per_unit REAL NOT NULL CHECK(g_per_unit>0),UNIQUE(mat_cd,uom));
+CREATE TABLE recipe_line(line_id TEXT PRIMARY KEY,recipe_id TEXT REFERENCES recipe_ver,mat_cd TEXT REFERENCES material_dict,qty REAL NOT NULL,uom TEXT NOT NULL,wt_basis TEXT NOT NULL,gross_f INTEGER NOT NULL DEFAULT 0);
+CREATE TABLE sku_spec(sku_cd TEXT PRIMARY KEY,item_cd TEXT REFERENCES menu_item,spec_nm TEXT,mult REAL NOT NULL CHECK(mult>0),active_f INTEGER NOT NULL);
+CREATE TABLE price_hist(price_id TEXT PRIMARY KEY,sku_cd TEXT REFERENCES sku_spec,amt REAL,valid_from TEXT NOT NULL,valid_to TEXT);
+CREATE TABLE combo_hdr(combo_cd TEXT PRIMARY KEY,shop_cd TEXT REFERENCES shop_mst,nm TEXT,amt REAL,active_f INTEGER NOT NULL);
+CREATE TABLE combo_line(line_id TEXT PRIMARY KEY,combo_cd TEXT REFERENCES combo_hdr,sku_cd TEXT REFERENCES sku_spec,qty REAL NOT NULL CHECK(qty>0));
+CREATE TABLE data_dictionary(entry_id TEXT PRIMARY KEY,table_nm TEXT,col_nm TEXT,meaning TEXT,unit_txt TEXT,rule_txt TEXT);
+CREATE INDEX idx_nut_mat ON nutrient_ver(mat_cd,valid_from);
+CREATE INDEX idx_recipe_item ON recipe_ver(item_cd,valid_from);
+CREATE INDEX idx_line_recipe ON recipe_line(recipe_id);
+CREATE INDEX idx_price_sku ON price_hist(sku_cd,valid_from);
